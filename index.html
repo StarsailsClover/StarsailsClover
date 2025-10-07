@@ -1,10 +1,347 @@
-<iframe
-      width="100%"
-      height="450px"
-      src="https://www.ccw.site/embed?id=6408706cfa7cf93373a8e688&type=user"
-      title="帆帆在这的主页 - 共创世界(ccw.site) - Scratch、游戏、动画、漫画、小说、编程创作社区"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowFullScreen
-      scrolling="no"
-    ></iframe>
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sails Huang — Portfolio</title>
+  <meta name="description" content="Sails Huang (泽川) — Student, developer, musician, RoboMaster competitor, creator of experimental projects." />
+  <link rel="icon" href="assets/icon/icon.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">StarsailsClover</a>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#research">Research</a>
+        <a href="#music">Music</a>
+        <a href="#contact">Contact</a>
+        <a class="github" href="https://github.com/StarsailsClover" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+      <button id="theme-toggle" aria-label="Toggle theme">☾</button>
+      <!-- 添加语言切换按钮 -->
+      <button id="language-toggle" aria-label="Toggle language">🌐</button>
+      <!-- 添加设置按钮 -->
+      <button id="settings-toggle" aria-label="Open settings">⚙️</button>
+      <button class="burger" id="burger" aria-label="Open menu">☰</button>
+    </div>
+    <div id="mobile-menu" class="mobile-menu">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#research">Research</a>
+      <a href="#music">Music</a>
+      <a href="#contact">Contact</a>
+      <a href="https://github.com/StarsailsClover" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <!-- 添加语言选择模态框 -->
+  <div id="language-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Select Language</h2>
+      <p>Choose your preferred language</p>
+      <div class="language-options">
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="zh">简体中文</button>
+      </div>
+      
+      <!-- 添加主题选择部分 (默认隐藏) -->
+      <div id="theme-preference" style="display: none; margin-top: 20px;">
+        <h2 id="theme-title">Select Theme</h2>
+        <p id="theme-desc">Choose your preferred theme</p>
+        <div class="language-options">
+          <button class="lang-btn" data-theme="dark">Dark Theme</button>
+          <button class="lang-btn" data-theme="light">Light Theme</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加音乐播放器模态框 -->
+  <div id="music-player-modal" class="modal">
+    <div class="modal-content music-player">
+      <!-- MacOS风格的关闭按钮 -->
+      <div class="macos-controls">
+        <div class="macos-close" onclick="closeMusicPlayer()"></div>
+      </div>
+      
+      <!-- 音乐播放器内容 -->
+      <div class="music-player-content">
+        <div class="album-art-container">
+          <img id="album-art" src="assets/musicbox/cover/default.jpg" alt="Album Art">
+        </div>
+        
+        <div class="music-info">
+          <h3 id="song-title">Unknown</h3>
+          <p id="song-artist">Unknown Artist</p>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar">
+              <div class="progress" id="progress"></div>
+            </div>
+          </div>
+          <div class="time-info">
+            <span id="current-time">0:00</span>
+            <span id="total-time">0:00</span>
+          </div>
+        </div>
+        
+        <div class="controls">
+          <button id="prev-btn" class="control-btn">⏮</button>
+          <button id="play-pause-btn" class="control-btn play-pause">▶</button>
+          <button id="next-btn" class="control-btn">⏭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 音乐悬浮窗 -->
+  <div id="music-float" class="music-float">
+    <img id="float-album-art" src="assets/musicbox/cover/default.jpg" alt="Now Playing">
+    <div id="music-controls" class="music-controls">
+      <button id="music-settings" class="settings-btn">⚙️</button>
+    </div>
+  </div>
+
+  <audio id="audio-player" preload="auto"></audio>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <h1 class="name">Sails Huang <span class="cn">(泽川)</span></h1>
+          <p class="tagline">Cross-disciplinary student · Robotics &amp; research · Music &amp; code</p>
+          <p class="lead">High school student in Guangzhou building creative code, experimental projects and music — quietly ambitious, deliberately curious.</p>
+
+          <div class="cta">
+            <a href="#projects" class="btn">See Projects</a>
+            <a href="https://github.com/StarsailsClover" target="_blank" class="btn ghost">GitHub</a>
+          </div>
+
+          <ul class="stats" aria-hidden="true">
+            <li><strong>RoboMaster:</strong> multi-award competitor</li>
+            <li><strong>Interests:</strong> CS, biomedical engineering, music</li>
+            <li><strong>Tools:</strong> JS · C++ · Unity · Python</li>
+          </ul>
+        </div>
+
+        <div class="hero-right">
+          <!-- Replace the placeholder with your portrait: assets/profile.jpg -->
+          <div class="portrait-frame">
+            <img src="assets/profile.jpg" alt="Profile photo — replace assets/profile.jpg" class="portrait" loading="lazy">
+            <div class="pulse"></div>
+          </div>
+
+          <div class="mini-cards">
+            <div class="card">Open-source: <a href="https://github.com/StarsailsClover" target="_blank">StarsailsClover</a></div>
+            <div class="card">Osmo Pocket 3 owner — weekend photographer</div>
+            <div class="card">Music composer — signed with agency</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section reveal">
+      <h2>About</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            I'm <strong>Sails Huang (泽川)</strong>, a high-school student at Guangdong Experimental Zhongxue Yuexiu School in Guangzhou.
+            I blend technology and creativity — robotics competitions (RoboMaster), web &amp; game development (Scratch, Unity), and music production.
+          </p>
+
+          <p>
+            I enjoy tackling cross-disciplinary projects: building a lightweight search prototype, experimenting with 3D Scratch worlds, and exploring ideas in biomedical engineering.
+            I prefer quiet, focused work and often sketch musical or engineering ideas on paper before bringing them to code.
+          </p>
+        </div>
+
+        <div class="about-meta">
+          <dl>
+            <dt>Location</dt>
+            <dd>Guangzhou, China</dd>
+            <dt>Focus</dt>
+            <dd>Computer Science · Biomedical Engineering · Music</dd>
+            <dt>Contact</dt>
+            <dd><button id="copy-email">Copy email</button></dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="section reveal">
+      <h2>Projects</h2>
+      <p class="muted">A selection of cross-disciplinary work — code, hardware, and creative experiments.</p>
+
+      <div class="projects-grid" id="projects-grid">
+        <!-- Project cards — replace thumbnails in assets/projects/ -->
+        <article class="project-card">
+          <img src="assets/projects/lightsearch.png" alt="LightSearch — placeholder" class="proj-thumb">
+          <h3>LightSearch</h3>
+          <p>Privacy-focused search prototype emphasizing UX and minimal UI. (Open-source)</p>
+          <div class="card-actions"><a href="#" class="btn small">Details</a></div>
+        </article>
+
+        <article class="project-card">
+          <img src="assets/projects/scratch3d.png" alt="Scratch 3D project — placeholder" class="proj-thumb">
+          <h3>Scratch 3D</h3>
+          <p>Multiplayer 3D experiments, lighting &amp; ray-tracing prototypes in Scratch.</p>
+          <div class="card-actions"><a href="#" class="btn small">Play</a></div>
+        </article>
+
+        <article class="project-card">
+          <img src="assets/projects/robomaster.png" alt="RoboMaster team — placeholder" class="proj-thumb">
+          <h3>RoboMaster</h3>
+          <p>Competition robotics — team strategy, control systems, and mechanical design.</p>
+          <div class="card-actions"><a href="#" class="btn small">Gallery</a></div>
+        </article>
+
+        <article class="project-card">
+          <img src="assets/projects/music.png" alt="Music production — placeholder" class="proj-thumb">
+          <h3>Music &amp; Composition</h3>
+          <p>Original songs, arrangements, and collaboration — signed with an agency for composition work.</p>
+          <div class="card-actions"><a href="#music" class="btn small">Listen</a></div>
+        </article>
+      </div>
+
+      <div class="repos" id="repo-list">
+        <h3>GitHub Repos <small>(live)</small></h3>
+        <div id="repos-container">Loading repos…</div>
+      </div>
+    </section>
+
+    <section id="research" class="section reveal">
+      <h2>Research &amp; Ideas</h2>
+      <p class="muted">Simple, executable, and innovative student research ideas you can do without complex labs.</p>
+
+      <ul class="research-list">
+        <li><strong>Comparative sensory study:</strong> taste &amp; perceived sweetness of branded vs homemade drinks (structured blind tasting + survey).</li>
+        <li><strong>Low-cost sensors:</strong> logging light and motion to profile daily study patterns (using cheap microcontrollers).</li>
+        <li><strong>Algorithmic music:</strong> generative composition tools that turn sensor data into MIDI.</li>
+      </ul>
+    </section>
+
+    <section id="music" class="section reveal">
+      <h2>Music</h2>
+      <p class="muted">Sketches, production notes, and links to demos. Replace audio sources with your exports.</p>
+
+      <div class="music-grid">
+        <div class="track">
+          <!-- placeholder artwork -->
+          <img src="assets/music/cover1.jpg" alt="Track cover placeholder">
+          <h4>却还记得你</h4>
+          <button class="btn small play-track" data-src="assets/music/却还记得你.mp3" data-cover="assets/music/cover1.jpg">播放</button>
+        </div>
+
+        <div class="track">
+          <img src="assets/music/cover2.jpg" alt="Tr/ack cover placeholder">
+          <h4>冬天</h4>
+          <button class="btn small play-track" data-src="assets/music/冬天.mp3" data-cover="assets/music/cover2.jpg">播放</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section reveal">
+      <h2>Contact</h2>
+      <p>If you want to collaborate or chat about projects, hit me up — or find me on GitHub.</p>
+
+      <form id="contact-form" class="contact-form" action="#" onsubmit="return false;">
+        <label>
+          Name
+          <input type="text" name="name" placeholder="Your name">
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="4" placeholder="Hey Sails — I have an idea..."></textarea>
+        </label>
+        <div class="form-actions">
+          <button id="send-btn" class="btn">Send (simulated)</button>
+          <button id="copy-github" type="button" class="btn ghost">Copy GitHub URL</button>
+        </div>
+        <p class="form-note muted">This form is static — replace with your email / backend when ready.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="foot-inner">
+      <div>© <span id="year"></span> Sails Huang (泽川)</div>
+      <div class="socials">
+        <a href="https://github.com/StarsailsClover" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="scripts.js" defer></script>
+</body>
+</html>
+```
+
+<!-- 添加设置侧边栏 -->
+  <div id="settings-sidebar" class="settings-sidebar">
+    <div class="settings-header">
+      <h2>设置</h2>
+      <button class="settings-close" id="settings-close">×</button>
+    </div>
+    
+    <div class="settings-tabs">
+      <button class="tab-button active" data-tab="general">通用</button>
+      <button class="tab-button" data-tab="personalization">个性化</button>
+      <button class="tab-button" data-tab="media">媒体</button>
+    </div>
+    
+    <div class="settings-content">
+      <div class="tab-content active" id="general">
+        <div class="setting-item">
+          <label>语言</label>
+          <select id="language-setting">
+            <option value="en">English</option>
+            <option value="zh">简体中文</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>主题</label>
+          <select id="theme-setting">
+            <option value="dark">深色</option>
+            <option value="light">浅色</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="tab-content" id="personalization">
+        <div class="setting-item">
+          <label class="switch">
+            <input type="checkbox" id="macos-style-toggle">
+            <span class="slider"></span>
+          </label>
+          <span>MacOS 26风格<span class="subtext">(移动端根据设备显示iOS/PadOS 26风格)</span></span>
+        </div>
+        <div class="setting-item">
+          <label>主色调</label>
+          <input type="color" id="accent-color-picker" value="#7c5cff">
+        </div>
+      </div>
+      
+      <div class="tab-content" id="media">
+        <div class="setting-item">
+          <label class="switch">
+            <input type="checkbox" id="music-autoplay" checked>
+            <span class="slider"></span>
+          </label>
+          <span>音乐自动播放</span>
+        </div>
+        <div class="setting-item">
+          <label>音量</label>
+          <input type="range" id="volume-control" min="0" max="100" value="70">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="settings-overlay" id="settings-overlay"></div>

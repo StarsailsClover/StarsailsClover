@@ -1,0 +1,37 @@
+{
+  "playlistName": "Playlist",
+  "creationDate": "2025-10-05",
+  "lastModified": "2025-10-05",
+  "songs": [
+    {
+      "id": "song001",
+      "title": "冬天",
+      "artist": "ZC",
+      "album": "冬天",
+      "filePath": "assets/musicbox/冬天.mp3",
+      "coverPath": "assets/musicbox/cover/冬天.jpg",
+      "genre": "EmotionRap",
+      "releaseYear": 2026
+    },
+    {
+      "id": "song002",
+      "title": "却还记得你",
+      "artist": "ZC",
+      "album": "却还记得你",
+      "filePath": "assets/musicbox/却还记得你.mp3",
+      "coverPath": "assets/musicbox/cover/却还记得你.jpg",
+      "genre": "EmotionRap",
+      "releaseYear": 2025
+    },
+    {
+      "id": "song003",
+      "title": "Elegant",
+      "artist": "Not2",
+      "album": "Elegant",
+      "filePath": "assets/musicbox/Elegant.mp3",
+      "coverPath": "assets/musicbox/cover/Elegant.jpg",
+      "genre": "Rap",
+      "releaseYear": 2025
+    }
+  ]
+}
