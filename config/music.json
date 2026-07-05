@@ -1,0 +1,10 @@
+{
+  "backendBaseUrl": "",
+  "netease": {
+    "enabled": true,
+    "provider": "official-outer-url",
+    "apiBase": "https://music.163.com/song/media/outer/url",
+    "musicIds": []
+  },
+  "notes": "填入 netease.musicIds 后，前端会用 MusicID 构造网易云外链；若配置 backendBaseUrl，则优先请求后端 /api/music/netease/:id 获取标题、歌手、封面、音频流。"
+}
