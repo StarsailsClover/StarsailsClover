@@ -1,0 +1,17 @@
+{
+  "playlistName": "Playlist",
+  "creationDate": "2025-10-05",
+  "lastModified": "2026-07-05",
+  "songs": [
+    {
+      "id": "song003",
+      "title": "Elegant",
+      "artist": "Not2",
+      "album": "Elegant",
+      "filePath": "assets/musicbox/Elegant.mp3",
+      "coverPath": "assets/musicbox/cover/Elegant.jpg",
+      "genre": "Rap",
+      "releaseYear": 2025
+    }
+  ]
+}
