@@ -52,7 +52,7 @@ function SiteShell() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/StarsailsClover">
+    <BrowserRouter>
       <MusicProvider>
         <SiteShell />
       </MusicProvider>
