@@ -14,10 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate Stats
-        uses: jstrieb/github-stats@master
+      - name: Generate Metrics
+        uses: lowlighter/metrics@latest
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filename: generated/metrics.svg
+          base: header, activity, community, repositories
+          plugin_languages: yes
+          plugin_languages_limit: 8
+          plugin_followup: yes
 
       - name: Commit and Push
         run: |
