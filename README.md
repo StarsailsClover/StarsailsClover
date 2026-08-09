@@ -42,6 +42,7 @@
 </td>
 <td width="33%" align="center">
   <h3>⚡ FastLink</h3>
+
   <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" /><br/><br/>
   <em>Next-gen network protocol<br/>with advanced obfuscation</em><br/><br/>
   <b>👤 Personal</b><br/><br/>
@@ -172,11 +173,9 @@
 <br/>
 
 <!-- ═══════════════ SNAKE (uncomment after workflow runs) ═══════════════ -->
-<!--
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/StarsailsClover/StarsailsClover/output/github-snake-dark.svg" />
     <img alt="github-snake" src="https://raw.githubusercontent.com/StarsailsClover/StarsailsClover/output/github-snake-dark.svg" />
   </picture>
 </p>
--->
