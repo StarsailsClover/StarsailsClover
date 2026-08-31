@@ -17,7 +17,7 @@ export default function GitHub() {
   const text = useSiteText();
   const [showModal, setShowModal] = useState(true);
   const [repos, setRepos] = useState<Repo[]>([]);
-  const [status, setStatus] = useState("正在读取公开仓库轨迹…");
+  const [status, setStatus] = useState(text.github.statusLoading);
 
   useEffect(() => {
     if (!showModal) {
@@ -28,14 +28,14 @@ export default function GitHub() {
         })
         .then((data: Repo[]) => {
           setRepos(data.slice(0, 8));
-          setStatus(`同步完成：${new Date().toLocaleString()}`);
+          setStatus(`${text.github.statusSynced}${new Date().toLocaleString()}`);
         })
         .catch(() => {
-          setStatus("GitHub 公开接口暂时不可达，显示离线观测模式。");
+          setStatus(text.github.statusOffline);
           setRepos([]);
         });
     }
-  }, [showModal]);
+  }, [showModal, text.github.statusSynced, text.github.statusOffline]);
 
   if (showModal) {
     const gh = text.github;
@@ -62,7 +62,7 @@ export default function GitHub() {
     <PageFrame eyebrow={text.github.eyebrow} title={text.github.title}>
       <p className="sync-line">{status}</p>
       <div className="repo-river">
-        {(repos.length ? repos : [{ id: 0, name: "StarsailsClover", description: "离线模式：公开仓库将在网络恢复后出现。", html_url: "https://github.com/StarsailsClover", language: "Unknown", stargazers_count: 0, updated_at: new Date().toISOString() }]).map((repo) => (
+        {(repos.length ? repos : [{ id: 0, name: "StarsailsClover", description: text.github.offlineDescription, html_url: "https://github.com/StarsailsClover", language: "Unknown", stargazers_count: 0, updated_at: new Date().toISOString() }]).map((repo) => (
           <a href={repo.html_url} className="repo-line" key={repo.id} target="_blank" rel="noreferrer">
             <span>{repo.language ?? "Text"}</span>
             <strong>{repo.name}</strong>

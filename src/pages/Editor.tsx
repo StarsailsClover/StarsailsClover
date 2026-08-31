@@ -38,7 +38,7 @@ export default function Editor() {
   return (
     <PageFrame eyebrow={text.editor.eyebrow} title={text.editor.title}>
       <div className="editor-toolbar">
-        <span><Save size={16} /> 自动保存于 {savedAt}</span>
+        <span><Save size={16} /> {text.editor.autosavePrefix} {savedAt}</span>
         <button type="button" onClick={saveLocal}><Save size={15} /> {text.editor.saveLocal}</button>
         <button type="button" onClick={downloadMarkdown}><Download size={15} /> {text.editor.download}</button>
       </div>

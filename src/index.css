@@ -15,6 +15,8 @@
   --line-strong: rgba(232, 242, 239, 0.22);
   --glass: rgba(7, 8, 7, 0.56);
   --glass-deep: rgba(4, 6, 5, 0.72);
+  /* 现实时段色调（由 <html data-phase> 覆写） */
+  --sky-glow: rgba(155, 190, 208, 0.1);
   font-family: "Cormorant Garamond", "Noto Serif SC", "LXGW WenKai", Georgia, serif;
   color: var(--water);
   background: var(--rock);
@@ -24,9 +26,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── 时段相位联动：黎明 / 白昼 / 黄昏 / 夜晚 ── */
+html[data-phase="dawn"] { --sky-glow: rgba(232, 160, 105, 0.16); }
+html[data-phase="dusk"] { --sky-glow: rgba(214, 130, 92, 0.15); }
+html[data-phase="night"] { --sky-glow: rgba(96, 128, 168, 0.09); }
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; background: radial-gradient(circle at 70% 18%, rgba(155, 190, 208, 0.1), transparent 36%), var(--rock); overflow-x: hidden; }
+body { margin: 0; min-width: 320px; background: radial-gradient(circle at 70% 18%, var(--sky-glow), transparent 36%), var(--rock); overflow-x: hidden; }
 a { color: inherit; text-decoration: none; }
 button, textarea, input { font: inherit; }
 button { cursor: pointer; border: none; background: none; color: inherit; }
@@ -80,6 +87,36 @@ body::after {
 /* ── 首页布局 ── */
 .home-page { position: relative; z-index: 3; min-height: 520vh; }
 .hero-section, .narrative-section, .porch-section { min-height: 100vh; display: flex; align-items: center; padding: 12vh 8vw; }
+.hero-section { position: relative; }
+
+/* 首页左侧竖向地标，与子页面 rail 呼应 */
+.hero-marker {
+  position: absolute; left: 2.6vw; top: 50%; transform: translateY(-50%);
+  writing-mode: vertical-rl; letter-spacing: 0.5em;
+  color: rgba(183, 184, 174, 0.3); font-size: 12px; text-transform: uppercase;
+}
+.hero-marker::before {
+  content: ""; display: block; width: 1px; height: 56px; margin: 0 auto 18px;
+  background: linear-gradient(transparent, rgba(216, 168, 95, 0.55));
+}
+
+/* 滚动提示：呼吸式垂线 */
+.scroll-hint {
+  position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
+  display: grid; justify-items: center; gap: 10px;
+  color: rgba(183, 184, 174, 0.52); font-size: 10px; letter-spacing: 0.42em; text-transform: uppercase;
+}
+.scroll-hint::after {
+  content: ""; width: 1px; height: 46px;
+  background: linear-gradient(var(--warm), transparent);
+  animation: hint-drop 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes hint-drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
 
 /* ── 天气芯片 ── */
 .weather-chip {
@@ -87,10 +124,18 @@ body::after {
   padding: 16px 18px; min-width: 220px; border: 1px solid var(--line);
   background: var(--glass-deep); backdrop-filter: blur(20px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28); border-radius: 2px;
+  overflow: hidden;
 }
+.weather-chip::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(rgba(155, 190, 208, 0.7), rgba(216, 168, 95, 0.5));
+}
+.weather-chip[data-phase="dawn"]::before, .weather-chip[data-phase="dusk"]::before { background: linear-gradient(var(--warm), rgba(214, 120, 80, 0.6)); }
+.weather-chip[data-phase="night"]::before { background: linear-gradient(#8fb0d8, rgba(90, 122, 138, 0.5)); }
 .weather-chip span { color: rgba(183, 184, 174, 0.5); font-size: 10px; text-transform: uppercase; letter-spacing: 0.22em; }
 .weather-chip strong { font-size: 14px; font-weight: 500; letter-spacing: 0.02em; }
 .weather-chip small { color: rgba(155, 190, 208, 0.6); font-size: 12px; }
+html[data-phase="dusk"] .weather-chip strong, html[data-phase="dawn"] .weather-chip strong { color: #f0c9a4; }
 
 /* ── 排版 ── */
 .hero-copy { max-width: 720px; margin-left: 2vw; }
@@ -111,13 +156,14 @@ p { color: rgba(232, 242, 239, 0.72); }
 @keyframes reveal { to { opacity: 1; transform: translateY(0); } }
 
 .narrative-section { justify-content: flex-end; gap: 36px; }
-.narrative-section:nth-of-type(3) { justify-content: flex-start; }
+/* 叙事段左右交替：偶数段落靠左，避免全部堆在一侧 */
+.narrative-section:nth-of-type(even) { justify-content: flex-start; flex-direction: row-reverse; }
 .section-marker { color: rgba(183, 184, 174, 0.36); writing-mode: vertical-rl; letter-spacing: 0.4em; font-size: 13px; }
 
 /* ── 门廊 ── */
 .porch-section { flex-direction: column; justify-content: center; align-items: stretch; gap: 56px; }
 .porch-copy { max-width: 760px; }
-.portal-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.portal-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
 .portal-door {
   min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;
   padding: 20px 18px; border: 1px solid var(--line); background: var(--glass);
@@ -129,8 +175,15 @@ p { color: rgba(232, 242, 239, 0.72); }
   background: linear-gradient(90deg, transparent, var(--warm), transparent);
   transform: translateX(-100%); transition: transform 0.6s;
 }
+/* 角标：hover 时向内收拢点亮，像推开一道门缝 */
+.portal-door::after {
+  content: ""; position: absolute; right: 12px; bottom: 12px; width: 20px; height: 20px;
+  border-right: 1px solid rgba(232, 242, 239, 0.28); border-bottom: 1px solid rgba(232, 242, 239, 0.28);
+  opacity: 0.45; transform: translate(5px, 5px); transition: transform 0.45s, opacity 0.45s, border-color 0.45s;
+}
 .portal-door:hover { transform: translateY(-6px); border-color: rgba(216, 168, 95, 0.4); background: rgba(216, 168, 95, 0.05); }
 .portal-door:hover::before { transform: translateX(0); }
+.portal-door:hover::after { transform: translate(0, 0); opacity: 1; border-color: rgba(216, 168, 95, 0.65); }
 .portal-door svg { color: rgba(232, 242, 239, 0.5); transition: color 0.3s; }
 .portal-door:hover svg { color: var(--warm); }
 
@@ -308,6 +361,10 @@ p { color: rgba(232, 242, 239, 0.72); }
   .nav-mark span { display: none; }
   .weather-chip { right: 12px; top: 76px; min-width: 180px; padding: 12px 14px; }
   .hero-section, .narrative-section, .porch-section { padding: 16vh 6vw; }
+  /* 小屏降低叠层滤镜开销：去掉扫描线与竖排地标，减轻模糊 */
+  body::after { display: none; }
+  .hero-marker { display: none; }
+  .scene-bg .scene-canvas-wrap { filter: brightness(0.7); }
   .portal-row, .editor-grid, .music-room { grid-template-columns: 1fr; }
   .article-line, .repo-line, .timeline-item { grid-template-columns: 1fr; }
   .floating-player { right: 12px; bottom: 12px; grid-template-columns: 50px 1fr auto; padding: 10px; }

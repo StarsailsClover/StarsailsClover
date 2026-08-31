@@ -2,15 +2,17 @@ import { Link, useParams } from "react-router-dom";
 import PageFrame from "@/components/PageFrame";
 import MarkdownView from "@/components/MarkdownView";
 import { getBlogPost } from "@/lib/blog";
+import { useSiteText } from "@/hooks/useSiteText";
 
 export default function BlogPost() {
   const { slug = "" } = useParams();
   const post = getBlogPost(slug);
+  const text = useSiteText();
 
   if (!post) {
     return (
-      <PageFrame eyebrow="Missing" title="这段刻痕暂时不存在">
-        <Link className="text-link" to="/blog">返回博客长廊</Link>
+      <PageFrame eyebrow={text.blog.missingEyebrow} title={text.blog.missingTitle}>
+        <Link className="text-link" to="/blog">{text.blog.backToBlog}</Link>
       </PageFrame>
     );
   }

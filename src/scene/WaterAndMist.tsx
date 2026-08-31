@@ -2,6 +2,51 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
+// 风：由来向（度）换算为场景漂移向量与强度
+function windVector(windDirection: number | null, windSpeed: number | null) {
+  const rad = ((windDirection ?? 220) * Math.PI) / 180;
+  const strength = THREE.MathUtils.clamp((windSpeed ?? 8) / 24, 0.25, 1.6);
+  return { x: -Math.sin(rad), z: -Math.cos(rad), strength };
+}
+
+// 雨：随风倾斜，风越大越斜、越急
+export function RainLines({ storm = 0, windDirection = null, windSpeed = null }: { storm?: number; windDirection?: number | null; windSpeed?: number | null }) {
+  const group = useRef<THREE.Group>(null);
+  const wind = useMemo(() => windVector(windDirection, windSpeed), [windDirection, windSpeed]);
+  // 雨滴初始位置固定：滚动重渲染时不再随机跳动
+  const drops = useMemo(
+    () =>
+      Array.from({ length: 46 }, (_, index) => ({
+        x: -5 + (index % 23) * 0.46,
+        y: Math.random() * 6 - 2,
+        z: -2 + (index % 6) * 0.4,
+      })),
+    []
+  );
+
+  useFrame((_, delta) => {
+    if (!group.current) return;
+    group.current.children.forEach((child) => {
+      child.position.y -= delta * (6 + storm * 4 + wind.strength * 2.5);
+      if (child.position.y < -2) child.position.y = 4;
+    });
+  });
+  if (storm < 0.5) return null;
+  const tiltZ = THREE.MathUtils.clamp(-wind.x * wind.strength * 0.16, -0.22, 0.22);
+  const tiltX = THREE.MathUtils.clamp(wind.z * wind.strength * 0.1, -0.16, 0.16);
+
+  return (
+    <group ref={group} position={[0, 1.4, -1.2]} rotation={[0.12 + tiltX, 0, -0.06 + tiltZ]}>
+      {drops.map((drop, index) => (
+        <mesh key={index} position={[drop.x, drop.y, drop.z]}>
+          <boxGeometry args={[0.008, 0.6, 0.008]} />
+          <meshStandardMaterial color="#cfe6f2" transparent opacity={0.22 + storm * 0.2} emissive="#9bbed0" emissiveIntensity={0.14} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 // 瀑布：水从崖顶溢出，沿岩壁流下到水潭
 export function Waterfall({ storm = 0 }: { storm?: number }) {
   const sheets = useRef<THREE.Group>(null);
@@ -57,6 +102,17 @@ export function Waterfall({ storm = 0 }: { storm?: number }) {
     return tex;
   }, []);
 
+  // 克隆纹理必须固定复用：在渲染中反复 clone 会泄漏显存，最终导致 WebGL 上下文丢失（画面变灰）
+  const clonedTextures = useMemo(
+    () =>
+      layers.map(() => {
+        const tex = streakTexture.clone();
+        tex.needsUpdate = true;
+        return tex;
+      }),
+    [streakTexture, layers]
+  );
+
   // 瀑布从崖顶 y=3.2 流下到水潭 y=-1.1，总高度 4.3
   const topY = 3.2;
   const fallHeight = 4.3;
@@ -70,7 +126,7 @@ export function Waterfall({ storm = 0 }: { storm?: number }) {
             <planeGeometry args={[layer.w, fallHeight]} />
             <meshStandardMaterial
               color={layer.color}
-              map={streakTexture.clone()}
+              map={clonedTextures[i]}
               transparent
               opacity={layer.opacity}
               roughness={0.2}
@@ -98,14 +154,14 @@ export function Waterfall({ storm = 0 }: { storm?: number }) {
         <meshStandardMaterial color="#222220" roughness={0.96} />
       </mesh>
 
-      {/* 落水雾幕 */}
-      <mesh ref={veil} position={[0.15, topY - fallHeight - 0.3, 0.18]}>
+      {/* 落水雾幕：贴着水线，不再半截沉入水下 */}
+      <mesh ref={veil} position={[0.15, topY - fallHeight + 0.75, 0.18]}>
         <planeGeometry args={[1.6, 2.2, 8, 12]} />
         <meshStandardMaterial color="#e6f4f1" transparent opacity={0.2} depthWrite={false} />
       </mesh>
 
-      {/* 撞击水潭 */}
-      <mesh position={[0, -1.15, 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
+      {/* 撞击水潭：涟漪圈浮在水面上方，而非水面之下 */}
+      <mesh position={[0, topY - fallHeight + 0.06, 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[1.8 + storm * 0.3, 48]} />
         <meshStandardMaterial color="#cfe4e1" transparent opacity={0.3 + storm * 0.08} roughness={0.3} />
       </mesh>
@@ -118,7 +174,7 @@ export function Waterfall({ storm = 0 }: { storm?: number }) {
 // 撞击点上扬的水花粒子
 function Splash({ storm, topY }: { storm: number; topY: number }) {
   const points = useRef<THREE.Points>(null);
-  const count = 90;
+  const count = 56;
   const data = useMemo(() => {
     const positions = new Float32Array(count * 3);
     const velocities = new Float32Array(count);
@@ -153,11 +209,12 @@ function Splash({ storm, topY }: { storm: number; topY: number }) {
   );
 }
 
-// 动态水面：波动顶点 + 高反射
-export function WaterPlane({ active, storm = 0 }: { active: boolean; storm?: number }) {
+// 动态水面：波动顶点 + 高反射；水面辉光随时段变色
+export function WaterPlane({ active, storm = 0, night = false, duskTinted = false }: { active: boolean; storm?: number; night?: boolean; duskTinted?: boolean }) {
   const ref = useRef<THREE.Mesh>(null);
   const geo = useMemo(() => new THREE.PlaneGeometry(15, 11, 48, 48), []);
   const base = useMemo(() => Float32Array.from(geo.attributes.position.array), [geo]);
+  const emissive = useMemo(() => new THREE.Color(duskTinted ? "#33283a" : night ? "#12333a" : "#16343a"), [night, duskTinted]);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
@@ -182,18 +239,19 @@ export function WaterPlane({ active, storm = 0 }: { active: boolean; storm?: num
         metalness={0.5}
         transparent
         opacity={0.86}
-        emissive="#12333a"
+        emissive={emissive}
         emissiveIntensity={active ? 0.14 : 0.06}
       />
     </mesh>
   );
 }
 
-// 体积雾粒子：分层飘动
-export function MistParticles({ storm = 0, night = false }: { storm?: number; night?: boolean }) {
+// 体积雾粒子：分层飘动，随风偏航
+export function MistParticles({ storm = 0, night = false, windDirection = null, windSpeed = null }: { storm?: number; night?: boolean; windDirection?: number | null; windSpeed?: number | null }) {
   const points = useRef<THREE.Points>(null);
+  const wind = useMemo(() => windVector(windDirection, windSpeed), [windDirection, windSpeed]);
   const positions = useMemo(() => {
-    const count = 320;
+    const count = 180;
     const values = new Float32Array(count * 3);
     for (let i = 0; i < count; i += 1) {
       values[i * 3] = -6 + Math.random() * 12;
@@ -203,12 +261,18 @@ export function MistParticles({ storm = 0, night = false }: { storm?: number; ni
     return values;
   }, []);
 
-  useFrame(({ clock }) => {
-    if (points.current) {
-      points.current.rotation.y = Math.sin(clock.elapsedTime * 0.06) * (0.1 + storm * 0.05);
-      points.current.position.x = Math.sin(clock.elapsedTime * 0.14) * 0.12;
-      points.current.position.y = Math.sin(clock.elapsedTime * 0.1) * 0.06;
-    }
+  useFrame(({ clock }, delta) => {
+    if (!points.current) return;
+    const t = clock.elapsedTime;
+    // 风推：整体沿风向缓慢平移并轻微倾斜，越强摆动越急
+    points.current.rotation.y = Math.sin(t * 0.06) * (0.1 + storm * 0.05);
+    points.current.rotation.z = THREE.MathUtils.clamp(-wind.x * wind.strength * 0.05, -0.08, 0.08);
+    points.current.rotation.x = THREE.MathUtils.clamp(wind.z * wind.strength * 0.04, -0.06, 0.06);
+    points.current.position.x += wind.x * wind.strength * delta * 0.18;
+    points.current.position.z += wind.z * wind.strength * delta * 0.12;
+    if (Math.abs(points.current.position.x) > 2.2) points.current.position.x *= 0.92;
+    if (Math.abs(points.current.position.z) > 1.6) points.current.position.z *= 0.92;
+    points.current.position.y = Math.sin(t * (0.1 + wind.strength * 0.05)) * 0.06;
   });
 
   return (

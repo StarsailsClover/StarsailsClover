@@ -5,6 +5,7 @@ import WaterfallVillaScene from "@/scene/WaterfallVillaScene";
 import { useMusic } from "@/components/music/MusicProvider";
 import { useGuangzhouWeather } from "@/hooks/useGuangzhouWeather";
 import { useSiteText } from "@/hooks/useSiteText";
+import { useDocumentPhase } from "@/hooks/useDocumentPhase";
 
 const portals = [
   { key: "blog", to: "/blog", icon: PenLine },
@@ -20,6 +21,7 @@ export default function Home() {
   const { isPlaying } = useMusic();
   const text = useSiteText();
   const weather = useGuangzhouWeather();
+  useDocumentPhase(weather.phase);
 
   useEffect(() => {
     const onScroll = () => {
@@ -43,17 +45,25 @@ export default function Home() {
       </div>
       <main className="home-page">
         <section className="hero-section">
-          <div className="weather-chip">
+          <div className="hero-marker" aria-hidden>Waterfall&nbsp;Villa</div>
+          <div className="weather-chip" data-phase={weather.phase}>
             <span>{text.home.weatherPrefix}</span>
             <strong>{weather.label}{weather.timeString ? ` · ${weather.timeString}` : ""}</strong>
             {weather.temperature !== null && (
-              <small>{weather.temperature}°C{weather.humidity !== null ? ` · 湿度 ${weather.humidity}%` : ""}</small>
+              <small>
+                {weather.temperature}°C
+                {weather.humidity !== null ? ` · ${text.home.humidityLabel} ${weather.humidity}%` : ""}
+                {weather.windSpeed !== null ? ` · ${text.home.windLabel} ${Math.round(weather.windSpeed)}km/h` : ""}
+              </small>
             )}
           </div>
           <div className="hero-copy reveal-block">
             <p className="eyebrow">{text.home.eyebrow}</p>
             <h1>{text.home.title}</h1>
             <p>{text.home.lead}</p>
+          </div>
+          <div className="scroll-hint" aria-hidden>
+            <span>{text.home.scrollHint}</span>
           </div>
         </section>
         {text.home.sections.map((section) => (

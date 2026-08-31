@@ -3,24 +3,21 @@ import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import SceneFallback from "@/scene/SceneFallback";
 import { cameraState } from "@/scene/cameraState";
+import type { Atmosphere } from "@/hooks/useGuangzhouWeather";
 
-type SceneWeather = {
-  label: string;
-  code: number;
-  temperature: number | null;
-  humidity: number | null;
-  isNight: boolean;
-  hour: number | null;
-  timeString: string | null;
-};
+// 能力检测只执行一次（同 WaterfallVillaScene：避免滚动重渲染时制造大量 WebGL 上下文）
+let webglSupported: boolean | null = null;
 
 function canUseWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
-  } catch {
-    return false;
+  if (webglSupported === null) {
+    try {
+      const canvas = document.createElement("canvas");
+      webglSupported = Boolean(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
+    } catch {
+      webglSupported = false;
+    }
   }
+  return webglSupported;
 }
 
 // 继承 Villa 页退出时的镜头状态
@@ -53,16 +50,27 @@ function InheritCamera() {
   return null;
 }
 
-function StaticScene({ weather }: { weather: SceneWeather }) {
-  const night = weather.isNight;
-  const fogColor = useMemo(() => new THREE.Color(night ? "#0a1418" : "#8fa9b5"), [night]);
+function StaticScene({ atmos }: { atmos: Atmosphere }) {
+  const night = atmos.isNight;
+  const goldenHour = atmos.phase === "dawn" || atmos.phase === "dusk";
+  const cloud = (atmos.cloudCover ?? 45) / 100;
+  const humidity = (atmos.humidity ?? 78) / 100;
+
+  const fogColor = useMemo(
+    () => new THREE.Color(night ? "#0a1418" : goldenHour ? "#a38d84" : "#8fa9b5"),
+    [night, goldenHour]
+  );
+
+  // 与主场景一致的湿度/云量联动，但整体保持更轻的存在感
+  const fogDensity = (night ? 0.072 : 0.085) * (0.88 + humidity * 0.28);
+  const dim = 1 - cloud * 0.4;
 
   return (
     <>
-      <fogExp2 attach="fog" args={[fogColor.getStyle(), night ? 0.072 : 0.085]} />
-      <ambientLight intensity={night ? 0.16 : 0.32} color={night ? "#5a7a8a" : "#b8d0d8"} />
-      <hemisphereLight args={[night ? "#4a6575" : "#cfe4ea", "#0a0d08", night ? 0.3 : 0.5]} />
-      <directionalLight position={[-3, 5, 3]} intensity={night ? 0.4 : 0.9} color={night ? "#aec4de" : "#fff2df"} />
+      <fogExp2 attach="fog" args={[fogColor.getStyle(), fogDensity]} />
+      <ambientLight intensity={(night ? 0.16 : 0.32) + cloud * 0.1} color={night ? "#5a7a8a" : "#b8d0d8"} />
+      <hemisphereLight args={[night ? "#4a6575" : goldenHour ? "#d8c0ae" : "#cfe4ea", "#0a0d08", (night ? 0.3 : 0.5) * dim]} />
+      <directionalLight position={[-3, 5, 3]} intensity={(night ? 0.4 : 0.9) * (0.55 + cloud * 0.5)} color={night ? "#aec4de" : goldenHour ? "#ffb37e" : "#fff2df"} />
 
       {/* 远景岩壁轮廓 */}
       <group position={[-3.1, -0.7, -3.5]} rotation={[0, 0.16, 0]}>
@@ -111,7 +119,7 @@ function StaticScene({ weather }: { weather: SceneWeather }) {
   );
 }
 
-export default function SceneBackground({ weather }: { weather: SceneWeather }) {
+export default function SceneBackground({ weather }: { weather: Atmosphere }) {
   if (typeof window !== "undefined" && !canUseWebGL()) return <SceneFallback />;
 
   return (
@@ -123,7 +131,7 @@ export default function SceneBackground({ weather }: { weather: SceneWeather }) 
         frameloop="demand"
       >
         <InheritCamera />
-        <StaticScene weather={weather} />
+        <StaticScene atmos={weather} />
       </Canvas>
     </div>
   );

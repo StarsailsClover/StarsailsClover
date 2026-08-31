@@ -10,18 +10,20 @@ import Feed from "@/pages/Feed";
 import Music from "@/pages/Music";
 import FloatingMusicPlayer from "@/components/music/FloatingMusicPlayer";
 import { MusicProvider } from "@/components/music/MusicProvider";
+import { useSiteText } from "@/hooks/useSiteText";
 
 const navItems = [
-  { to: "/", label: "Villa", icon: HomeIcon },
-  { to: "/blog", label: "Blog", icon: PenLine },
-  { to: "/github", label: "GitHub", icon: Github },
-  { to: "/about", label: "About", icon: UserRound },
-  { to: "/feed", label: "Feed", icon: Rss },
-  { to: "/music", label: "Music", icon: Music2 },
-  { to: "/editor", label: "Editor", icon: Aperture },
+  { to: "/", key: "villa", icon: HomeIcon },
+  { to: "/blog", key: "blog", icon: PenLine },
+  { to: "/github", key: "github", icon: Github },
+  { to: "/about", key: "about", icon: UserRound },
+  { to: "/feed", key: "feed", icon: Rss },
+  { to: "/music", key: "music", icon: Music2 },
+  { to: "/editor", key: "editor", icon: Aperture },
 ];
 
 function SiteShell() {
+  const text = useSiteText();
   return (
     <>
       <nav className="site-nav" aria-label="主导航">
@@ -30,7 +32,7 @@ function SiteShell() {
           return (
             <NavLink key={item.to} to={item.to} end={item.to === "/"} className="nav-mark">
               <Icon size={15} />
-              <span>{item.label}</span>
+              <span>{text.nav[item.key] ?? item.key}</span>
             </NavLink>
           );
         })}

@@ -24,6 +24,8 @@ type MusicConfig = {
     enabled?: boolean;
     apiBase?: string;
     musicIds?: string[];
+    // 无后端时的静态元数据：避免曲目显示为 "Netease #id"
+    meta?: Record<string, { title?: string; artist?: string; album?: string; cover?: string }>;
   };
 };
 
@@ -84,11 +86,11 @@ async function loadNeteaseTracks(config: MusicConfig) {
     return {
       id: `netease-${id}`,
       musicId: id,
-      title: `Netease #${id}`,
-      artist: "Netease Cloud Music",
-      album: `MusicID ${id}`,
+      title: config.netease?.meta?.[String(id)]?.title ?? `Netease #${id}`,
+      artist: config.netease?.meta?.[String(id)]?.artist ?? "Netease Cloud Music",
+      album: config.netease?.meta?.[String(id)]?.album ?? config.netease?.meta?.[String(id)]?.title ?? `Netease #${id}`,
       filePath: neteaseUrl(id, config.netease?.apiBase),
-      coverPath: "assets/musicbox/cover/Elegant.jpg",
+      coverPath: config.netease?.meta?.[String(id)]?.cover ?? "assets/musicbox/cover/Elegant.jpg",
       genre: "Netease",
       source: "netease",
     };
@@ -134,7 +136,11 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     setDuration(0);
     setError(null);
     if (isPlaying) {
-      audioRef.current.play().catch(() => setError(`无法播放 ${currentTrack.title}，可能文件尚未迁入或外链受限。`));
+      audioRef.current.play().catch((err: unknown) => {
+        // play() 被 load()/pause() 打断属正常竞态，音频实际已在播，不算错误
+        if ((err as DOMException | undefined)?.name === "AbortError") return;
+        setError(`无法播放 ${currentTrack.title}，可能文件尚未迁入或外链受限。`);
+      });
     }
   }, [currentTrack?.id]);
 
@@ -154,7 +160,11 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       setIsPlaying(false);
       return;
     }
-    audio.play().then(() => setIsPlaying(true)).catch(() => {
+    audio.play().then(() => setIsPlaying(true)).catch((err: unknown) => {
+      if ((err as DOMException | undefined)?.name === "AbortError") {
+        if (!audio.paused) setIsPlaying(true);
+        return;
+      }
       setIsPlaying(false);
       setError(`无法播放 ${currentTrack.title}，已保留控制权。`);
     });
@@ -196,6 +206,9 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
         onEnded={next}
         onError={() => {
+          // load() 中断旧曲目的 MEDIA_ERR_ABORTED 是切歌的正常竞态，不是播放失败
+          const mediaError = audioRef.current?.error;
+          if (mediaError && mediaError.code === MediaError.MEDIA_ERR_ABORTED) return;
           setIsPlaying(false);
           if (currentTrack) setError(`无法播放 ${currentTrack.title}，可能文件不存在或外链受限。`);
         }}

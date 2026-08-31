@@ -1,13 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
 
-type WeatherState = {
+export type Phase = "dawn" | "day" | "dusk" | "night";
+
+// 场景与 UI 共享的"现实大气"状态：天气 + 时间 + 派生联动参数
+export type Atmosphere = {
   label: string;
   code: number;
   temperature: number | null;
   humidity: number | null;
+  cloudCover: number | null; // 0-100
+  windSpeed: number | null; // km/h
+  windDirection: number | null; // 风的来向（度）
   isNight: boolean;
+  isDaylight: boolean;
   hour: number | null;
   timeString: string | null;
+  phase: Phase;
 };
 
 const weatherLabels: Record<number, string> = {
@@ -58,37 +66,79 @@ function nightFromHour(hour: number | null): boolean {
   return hour < 6 || hour >= 19;
 }
 
-export function useGuangzhouWeather() {
-  const [weather, setWeather] = useState<WeatherState>(() => {
-    const { hour, timeString } = localGuangzhouTime();
-    return { label: "广州时间同步", code: 1, temperature: null, humidity: null, isNight: nightFromHour(hour), hour, timeString };
-  });
+// 一天中的相位：黎明 5-7 / 白昼 7-17 / 黄昏 17-19 / 夜晚其余
+function phaseFromHour(hour: number | null): Phase {
+  const h = hour ?? new Date().getUTCHours() + 8;
+  const adjusted = h >= 24 ? h - 24 : h;
+  if (adjusted < 5) return "night";
+  if (adjusted < 7) return "dawn";
+  if (adjusted < 17) return "day";
+  if (adjusted < 19) return "dusk";
+  return "night";
+}
+
+function makeState(data?: {
+  label: string;
+  code: number;
+  temperature: number | null;
+  humidity: number | null;
+  cloudCover: number | null;
+  windSpeed: number | null;
+  windDirection: number | null;
+}): Atmosphere {
+  const { hour, timeString } = localGuangzhouTime();
+  return {
+    label: data?.label ?? "广州时间同步",
+    code: data?.code ?? 1,
+    temperature: data?.temperature ?? null,
+    humidity: data?.humidity ?? null,
+    cloudCover: data?.cloudCover ?? null,
+    windSpeed: data?.windSpeed ?? null,
+    windDirection: data?.windDirection ?? null,
+    isNight: nightFromHour(hour),
+    isDaylight: !nightFromHour(hour),
+    hour,
+    timeString,
+    phase: phaseFromHour(hour),
+  };
+}
+
+export function useGuangzhouWeather(): Atmosphere {
+  const [weather, setWeather] = useState<Atmosphere>(() => makeState());
 
   useEffect(() => {
     const tick = () => {
-      const { hour, timeString } = localGuangzhouTime();
-      setWeather((prev) => ({ ...prev, hour, timeString, isNight: nightFromHour(hour) }));
+      setWeather((prev) => {
+        const next = makeState(prev);
+        if (prev.timeString === next.timeString && prev.phase === next.phase && prev.isNight === next.isNight) return prev;
+        return next;
+      });
     };
     const timer = setInterval(tick, 30000);
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=23.1291&longitude=113.2644&current=temperature_2m,relative_humidity_2m,weather_code&timezone=Asia%2FShanghai")
+    fetch(
+      "https://api.open-meteo.com/v1/forecast?latitude=23.1291&longitude=113.2644&current=temperature_2m,relative_humidity_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,is_day&timezone=Asia%2FShanghai"
+    )
       .then((response) => response.json())
       .then((data) => {
-        const { hour, timeString } = localGuangzhouTime();
-        const code = Number(data.current?.weather_code ?? 1);
-        setWeather({
-          label: weatherLabels[code] ?? "云层变化",
-          code,
-          temperature: Number(data.current?.temperature_2m ?? NaN) || null,
-          humidity: Number(data.current?.relative_humidity_2m ?? NaN) || null,
-          isNight: nightFromHour(hour),
-          hour,
-          timeString,
-        });
+        const current = data.current ?? {};
+        const code = Number(current.weather_code ?? 1);
+        const num = (value: unknown): number | null => {
+          const parsed = Number(value);
+          return Number.isFinite(parsed) ? parsed : null;
+        };
+        setWeather(
+          makeState({
+            label: weatherLabels[code] ?? "云层变化",
+            code,
+            temperature: num(current.temperature_2m),
+            humidity: num(current.relative_humidity_2m),
+            cloudCover: num(current.cloud_cover),
+            windSpeed: num(current.wind_speed_10m),
+            windDirection: num(current.wind_direction_10m),
+          })
+        );
       })
-      .catch(() => {
-        const { hour, timeString } = localGuangzhouTime();
-        setWeather({ label: "广州时间同步", code: 1, temperature: null, humidity: null, isNight: nightFromHour(hour), hour, timeString });
-      });
+      .catch(() => undefined);
     return () => clearInterval(timer);
   }, []);
 

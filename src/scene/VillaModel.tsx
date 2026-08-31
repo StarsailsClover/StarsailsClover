@@ -109,14 +109,14 @@ export default function VillaModel({ active }: { active: boolean }) {
       {/* ── 屋顶 ── */}
       <Slab y={1.78} w={2.6} d={1.6} x={0.15} z={0.02} color="#2a2a22" />
 
-      {/* ── 纤细钢柱 ── */}
+      {/* ── 纤细钢柱：顶端固定于楼板底，下端锚入水面 ── */}
       {[
         [1.5, -0.8],
         [1.5, 0.85],
         [-0.9, 0.9],
       ].map(([px, pz], i) => (
-        <mesh key={i} position={[px, -0.55, pz]}>
-          <cylinderGeometry args={[0.03, 0.03, 1.0, 8]} />
+        <mesh key={i} position={[px, -0.63, pz]}>
+          <cylinderGeometry args={[0.03, 0.03, 1.16, 8]} />
           <meshStandardMaterial color="#0e100e" roughness={0.3} metalness={0.75} />
         </mesh>
       ))}

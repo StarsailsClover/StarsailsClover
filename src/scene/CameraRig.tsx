@@ -33,7 +33,7 @@ function sampleFov(t: number) {
 }
 
 export default function CameraRig({ progress }: { progress: number }) {
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
   const cameraCurve = useMemo(() => new THREE.CatmullRomCurve3(cameraKeys, false, "catmullrom", 0.4), []);
   const lookCurve = useMemo(() => new THREE.CatmullRomCurve3(lookKeys, false, "catmullrom", 0.4), []);
   const smoothed = useRef(0);
@@ -63,6 +63,9 @@ export default function CameraRig({ progress }: { progress: number }) {
       camera.fov = THREE.MathUtils.damp(camera.fov, targetFov, 3.5, delta);
       camera.updateProjectionMatrix();
     }
+
+    // 抵达别墅时曝光微微上扬，像走近一盏亮着的灯
+    gl.toneMappingExposure = THREE.MathUtils.damp(gl.toneMappingExposure, 1.04 + t * 0.16, 3.2, delta);
 
     // 写入共享状态，供子页面背景继承
     cameraState.position.copy(camera.position);
