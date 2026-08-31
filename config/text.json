@@ -1,46 +1,80 @@
-{
+{  "nav": {
+    "villa": "Villa",
+    "blog": "Blog",
+    "github": "GitHub",
+    "about": "About",
+    "feed": "Feed",
+    "music": "Music",
+    "editor": "Editor"
+  },
   "home": {
     "eyebrow": "StarsailsClover / Waterfall Villa",
-    "title": "把个人网站，建在瀑布边。",
-    "lead": "这里不是简历卡片墙，而是一处可滚动进入的数字住所：岩壁、雾、玻璃、暖光与一只保持播放状态的唱片。",
+    "title": "把少年心绪，安放在雾雨的山谷。",
+    "lead": "这里不止是代码栖息的数字住所，也是盛满梅雨季、盛夏残痕、细碎故事的精神山谷。人间聚散随风雨漫入，过往如潮水反复漫上阶沿。",
     "weatherPrefix": "Guangzhou Atmosphere",
+    "humidityLabel": "潮意",
+    "windLabel": "风息",
+    "scrollHint": "Scroll",
     "sections": [
-      { "index": "01", "title": "岩壁", "text": "代码、研究与声音被收束在同一处山谷。" },
-      { "index": "02", "title": "瀑布", "text": "持续流动的日志、仓库更新与写作草稿。" },
-      { "index": "03", "title": "别墅", "text": "冷雾中的现代居所，暖光只为真正的入口亮起。" }
+      { "index": "01", "title": "雨谷", "text": "少年心绪、细碎故事与滚烫思考，都被绵绵细雨收纳于此。" },
+      { "index": "02", "title": "流光", "text": "流淌的随笔、破碎的故事与未写完的词章在此往复生长。" },
+      { "index": "03", "title": "雾墅", "text": "潮湿氤氲的居所，只为沉陷在回忆里的人留一盏暖光。" }
     ],
     "porchEyebrow": "Spatial Entrances",
-    "porchTitle": "抵达门廊，选择下一间房。",
+    "porchTitle": "踏过湿润门廊，走入属于你的一段心绪。",
     "portals": {
-      "blog": "文档长廊",
+      "blog": "诗行长廊",
       "github": "仓库观测台",
-      "about": "私人会客室",
-      "feed": "水雾广播",
-      "music": "音乐水室"
+      "about": "心绪会客室",
+      "feed": "雨雾广播",
+      "music": "晚夏水室"
     }
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "一个往返于盛夏与雨季之间的人",
+    "lead": "StarsailsClover 的数字空间，以代码做骨架，以雨雾、少年心事当作水汽。这里没有制式履历，只有文字沉淀下来的痕迹，是直面人间聚散之后留下的心绪路径。",
+    "timeline": [
+      { "label": "Words", "text": "借笔墨收容春愁夏绪，把瞬间与细碎故事凝固成文。" },
+      { "label": "Research", "text": "关注AI、交互系统，凝望技术迭代与人世聚散。" },
+      { "label": "Mood", "text": "将梅雨季、蝉鸣盛夏与未竟的少年情愫揉进时间线。" }
+    ]
+  },
+  "music": {
+    "eyebrow": "Music Room",
+    "title": "晚夏漫溢的播放队列",
+    "nowPlaying": "正在回响",
+    "silentTitle": "万籁浸雨",
+    "waitingArtist": "静待旋律漫入雾谷"
   },
   "editor": {
     "eyebrow": "Local First Editor",
-    "title": "一张贴着水汽的写作台",
-    "saveLocal": "保存到浏览器本地",
-    "download": "下载 Markdown 文件",
-    "saved": "已保存"
+    "title": "蒙着雨雾的写作台",
+    "autosavePrefix": "默存心绪于",
+    "saveLocal": "留存至浏览器本地",
+    "download": "导出 Markdown 文稿"
   },
   "blog": {
     "eyebrow": "Blog Archive",
-    "title": "岩壁上的写作刻痕",
+    "title": "岩壁之上，刻满雨与旧梦的诗行",
     "xEyebrow": "X / x.com/sailshuang_",
-    "xTitle": "海外访问者可见的水雾短讯",
-    "domesticHint": "国内访问仅显示站内文章。"
+    "xTitle": "供远方访客阅览的雨雾短章",
+    "missingEyebrow": "Absent",
+    "missingTitle": "这一段心事尚且无处落笔",
+    "backToBlog": "返回诗行长廊"
   },
   "github": {
     "eyebrow": "GitHub Observatory",
-    "title": "仓库像水线一样记录更新",
+    "title": "仓库如同潮汐，记录每一次起落",
+    "statusLoading": "正在打捞公开仓库的时间痕迹…",
+    "statusSynced": "潮汐同步完成：",
+    "statusOffline": "GitHub公开接口暂不可触，进入潮汐离线观测模式。",
+    "offlineDescription": "离线模式：仓库内容将待潮信恢复之后显现。",
     "modalEyebrow": "Villa Passage",
-    "modalTitle": "此室有新室替代，与我共前往？",
-    "modalHint": "sails.n0th1n3ssd0ma1n.top",
-    "modalConfirm": "与君共往",
-    "modalDecline": "我甚喜旧",
-    "externalUrl": "http://sails.n0th1n3ssd0ma1n.top"
+    "modalTitle": "旧谷之外另有新境，是否循光同往？",
+    "modalHint": "starsails.n0th1n3ssd0ma1n.top",
+    "modalConfirm": "随光赴远",
+    "modalDecline": "独守旧雾",
+    "externalUrl": "http://starsails.n0th1n3ssd0ma1n.top"
   }
 }

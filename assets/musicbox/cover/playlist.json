@@ -1,7 +1,7 @@
 {
   "playlistName": "Playlist",
   "creationDate": "2025-10-05",
-  "lastModified": "2026-07-05",
+  "lastModified": "2026-08-31",
   "songs": [
     {
       "id": "song003",
@@ -12,6 +12,96 @@
       "coverPath": "assets/musicbox/cover/Elegant.jpg",
       "genre": "Rap",
       "releaseYear": 2025
+    },
+    {
+      "id": "song004",
+      "title": "Mustang",
+      "artist": "马斯塔里Mustang, 热七哥",
+      "album": "Mustang",
+      "filePath": "assets/musicbox/Mustang - 马斯塔里Mustang,热七哥.mp3",
+      "coverPath": "assets/musicbox/cover/song004.jpg",
+      "genre": "嘻哈/说唱"
+    },
+    {
+      "id": "song005",
+      "title": "Selfie",
+      "artist": "Realestk",
+      "album": "Selfie",
+      "filePath": "assets/musicbox/Selfie - Realestk.mp3",
+      "coverPath": "assets/musicbox/cover/song005.jpg",
+      "genre": "R&B/灵魂乐"
+    },
+    {
+      "id": "song006",
+      "title": "Selfie",
+      "artist": "Қозы",
+      "album": "Selfie",
+      "filePath": "assets/musicbox/Selfie - Қозы.mp3",
+      "coverPath": "assets/musicbox/cover/song006.jpg",
+      "genre": "哈萨克流行"
+    },
+    {
+      "id": "song007",
+      "title": "两 难",
+      "artist": "加木",
+      "album": "两 难",
+      "filePath": "assets/musicbox/两 难 - 加木.mp3",
+      "coverPath": "assets/musicbox/cover/song007.jpg",
+      "genre": "粤语流行"
+    },
+    {
+      "id": "song008",
+      "title": "单行恋",
+      "artist": "吴炳文, Max李玄",
+      "album": "单行恋",
+      "filePath": "assets/musicbox/单行恋 - 吴炳文,Max李玄.mp3",
+      "coverPath": "assets/musicbox/cover/song008.jpg",
+      "genre": "国语流行"
+    },
+    {
+      "id": "song009",
+      "title": "屋中象.",
+      "artist": "热七哥",
+      "album": "屋中象.",
+      "filePath": "assets/musicbox/屋中象. - 热七哥.mp3",
+      "coverPath": "assets/musicbox/cover/song009.jpg",
+      "genre": "粤语流行"
+    },
+    {
+      "id": "song010",
+      "title": "底牌",
+      "artist": "Max李玄, 邹沛沛",
+      "album": "底牌",
+      "filePath": "assets/musicbox/底牌 - Max李玄,邹沛沛.mp3",
+      "coverPath": "assets/musicbox/cover/song010.jpg",
+      "genre": "嘻哈/说唱"
+    },
+    {
+      "id": "song011",
+      "title": "情人",
+      "artist": "蔡徐坤",
+      "album": "情人",
+      "filePath": "assets/musicbox/情人 - 蔡徐坤.mp3",
+      "coverPath": "assets/musicbox/cover/song011.png",
+      "genre": "国语流行"
+    },
+    {
+      "id": "song012",
+      "title": "梗 概",
+      "artist": "加木",
+      "album": "梗 概",
+      "filePath": "assets/musicbox/梗 概 - 加木.mp3",
+      "coverPath": "assets/musicbox/cover/song012.jpg",
+      "genre": "国语流行"
+    },
+    {
+      "id": "song013",
+      "title": "離我太遙遠的清晨",
+      "artist": "热七哥",
+      "album": "離我太遙遠的清晨",
+      "filePath": "assets/musicbox/離我太遙遠的清晨 - 热七哥.mp3",
+      "coverPath": "assets/musicbox/cover/song013.jpg",
+      "genre": "粤语流行"
     }
   ]
 }

@@ -6,5 +6,5 @@
     "apiBase": "https://music.163.com/song/media/outer/url",
     "musicIds": []
   },
-  "notes": "填入 netease.musicIds 后，前端会用 MusicID 构造网易云外链；若配置 backendBaseUrl，则优先请求后端 /api/music/netease/:id 获取标题、歌手、封面、音频流。"
+  "notes": "musicIds 使用网易云官方外链播放（当前为空：Selfie 与情人已有本地文件）。本地曲目在 assets/musicbox/cover/playlist.json 注册；无内嵌封面时用 Elegant.jpg 兜底。若配置 backendBaseUrl，则优先请求后端 /api/music/netease/:id 获取标题、歌手、封面、音频流。"
 }
